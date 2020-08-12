@@ -1,6 +1,8 @@
-# readium-lcp-swift
+# r2-lcp-swift
+
 Swift wrapper module for LCP support
 
+[Changes and releases are documented in the Changelog](CHANGELOG.md)
 
 ## Adding the library to your iOS project
 
@@ -16,7 +18,7 @@ install ReadiumLCP with Carthage:
  2. Update your Cartfile to include the following:
 
     ```ruby
-    github "readium/r2-lcp-swift" ~> 1.0.5
+    github "readium/r2-lcp-swift" "develop"
     ```
 
  3. Run `carthage update` and
@@ -48,7 +50,7 @@ ReadiumLCP with CocoaPods:
     use_frameworks!
 
     target 'YourAppTargetName' do
-        pod 'ReadiumLCP', :git => 'https://github.com/readium/r2-lcp-swift.git', '~> 1.0.5'
+        pod 'ReadiumLCP', :git => 'https://github.com/readium/r2-lcp-swift.git', :branch => 'develop'
     end
     ```
 
