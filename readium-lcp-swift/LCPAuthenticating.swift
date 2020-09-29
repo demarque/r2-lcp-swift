@@ -13,14 +13,23 @@ import Foundation
 
 public protocol LCPAuthenticating {
     
+    /// Indicates whether the user might be prompted to ask their credentials, when calling
+    /// `requestPassphrase()`.
+    var requiresUserInteraction: Bool { get }
+    
     /// Requests a passphrase to decrypt the given license.
-    /// The client app can prompt the user to enter the passphrase, or retrieve it by any other means (eg. web service).
     ///
-    /// - Parameter license: Information to show to the user about the license being opened.
-    /// - Parameter reason: Reason why the passphrase is requested. It should be used to prompt the user.
-    /// - Parameter completion: Used to return the retrieved passphrase. If the user cancelled, send nil. The passphrase may
-    ///   be already hashed.
-    func requestPassphrase(for license: LCPAuthenticatedLicense, reason: LCPAuthenticationReason, completion: @escaping (String?) -> Void)
+    /// The reading app can prompt the user to enter the passphrase, or retrieve it by any other
+    /// means (eg. web service).
+    ///
+    /// - Parameters:
+    ///   - license: Information to show to the user about the license being opened.
+    ///   - reason: Reason why the passphrase is requested. It should be used to prompt the user.
+    ///   - sender: Free object that can be used by reading apps to give some UX context when
+    ///     presenting dialogs. For example, the host `UIViewController`.
+    ///   - completion: Used to return the retrieved passphrase. If the user cancelled, send nil.
+    ///     The passphrase may be already hashed.
+    func requestPassphrase(for license: LCPAuthenticatedLicense, reason: LCPAuthenticationReason, sender: Any?, completion: @escaping (String?) -> Void)
     
 }
 
@@ -65,4 +74,37 @@ public struct LCPAuthenticatedLicense {
         self.document = document
     }
 
+}
+
+/// An `LCPAuthenticating` implementation which can directly use a provided clear or hashed
+/// passphrase.
+///
+/// If the provided `passphrase` is incorrect, the given `fallback` authentication is used.
+public class LCPPassphrase: LCPAuthenticating {
+    
+    private let passphrase: String
+    private let fallback: LCPAuthenticating?
+    
+    public init(_ passphrase: String, fallback: LCPAuthenticating? = nil) {
+        self.passphrase = passphrase
+        self.fallback = fallback
+    }
+    
+    public var requiresUserInteraction: Bool {
+        fallback?.requiresUserInteraction ?? false
+    }
+    
+    public func requestPassphrase(for license: LCPAuthenticatedLicense, reason: LCPAuthenticationReason, sender: Any?, completion: @escaping (String?) -> Void) {
+        guard reason == .passphraseNotFound else {
+            if let fallback = fallback {
+                fallback.requestPassphrase(for: license, reason: reason, sender: sender, completion: completion)
+            } else {
+                completion(nil)
+            }
+            return
+        }
+        
+        completion(passphrase)
+    }
+    
 }
