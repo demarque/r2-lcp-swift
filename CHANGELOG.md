@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+* Fixed really slow opening of large PDF documents.
+
+
 ## [2.0.0-beta.1]
 
 ### Changed
