@@ -5,7 +5,6 @@
 //
 
 import Foundation
-import R2LCPClient
 
 public enum LCPError: LocalizedError {
     // The operation can't be done right now because another License operation is running.
@@ -63,8 +62,6 @@ public enum LCPError: LocalizedError {
                 case .contentDecryptError:
                     return R2LCPLocalizedString("LCPClientError.contentDecryptError")
                 case .unknown:
-                    return R2LCPLocalizedString("LCPClientError.unknown")
-                @unknown default:
                     return R2LCPLocalizedString("LCPClientError.unknown")
                 }
             }()
